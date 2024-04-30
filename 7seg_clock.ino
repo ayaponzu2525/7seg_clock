@@ -20,7 +20,12 @@ Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);  //800kHzでNeoP
 const char *ssid = "your ssid";
 const char *password = "your pass";
 
-int swtich;//:を点滅させるフラグ
+int flag;//:を点滅させるフラグ
+unsigned long previousTime;
+unsigned long ntptime;
+
+struct tm timeInfo;  //時刻を格納するオブジェクト
+
 
 void setup() {
   Serial.begin(115200);
@@ -46,10 +51,11 @@ void setup() {
 
 
   pixels.begin();  //NeoPixelを開始
-  flag = 0;
+  int flag = 1;
+  ntpacces();
 }
 
-struct tm timeInfo;  //時刻を格納するオブジェクト
+
 
 void ShowTime(int hour, int minute) {
   /* ShowTime関数は、構造型(struct)の変数を受け取れるので、ShowTime関数の中に、LED画面に表示するコードを追加する。*/
@@ -61,10 +67,10 @@ void ShowTime(int hour, int minute) {
     time_4_digits = (time_4_digits - s[i]) / 10;
   }
 
-  Serial.print(s[0]);
-  Serial.print(s[1]);
-  Serial.print(s[2]);
-  Serial.println(s[3]);
+  // Serial.print(s[0]);
+  // Serial.print(s[1]);
+  // Serial.print(s[2]);
+  // Serial.println(s[3]);
 
 
   pixels.clear();
@@ -82,29 +88,51 @@ void ShowTime(int hour, int minute) {
     }
   }
   
-  if (flag == 0){
-    pixels.setPixelColor(36, pixels.Color(10, 10, 10));//点灯
-    pixels.setPixelColor(37, pixels.Color(10, 10, 10));
-    
-  }
-  pixels.setPixelColor(36, pixels.Color(10, 10, 10));
-  pixels.setPixelColor(37, pixels.Color(10, 10, 10));
+
+  pixels.setPixelColor(36, pixels.Color(flag*100, flag*100, flag*100));//1の時[:]点灯
+  pixels.setPixelColor(37, pixels.Color(flag*100, flag*100, flag*100));
+
+
   pixels.show();  //LEDに色を反映
+  
   
 }
 
 
 void loop() {
-  getLocalTime(&timeInfo);  //tmオブジェクトのtimeInfoに現在時刻を入れ込む
+
+  Clock();//1秒カウントアップ
   ShowTime(timeInfo.tm_hour, timeInfo.tm_min);
-  delay(1000);
+  if(millis() - ntptime > 180*1000){//ntpをとった時間から180秒たったら
+    ntpacces();
+  }
+  
+}
 
+void Clock(){
+  if (millis() - previousTime >= 1000) {   //プログラムが経過した時間が1秒経ったら
+    previousTime = millis();   //基準時間に現在時間を代入
+    flag = flag ^1; //1秒ごとに点灯
+    timeInfo.tm_sec+=1; //1秒カウントアップ
+    if(timeInfo.tm_sec == 60){
+      timeInfo.tm_sec = 0;
+      timeInfo.tm_min += 1;
+      if(timeInfo.tm_min == 60){
+        timeInfo.tm_min = 0;
+        timeInfo.tm_hour += 1;
+        if (timeInfo.tm_hour == 24){
+          timeInfo.tm_hour = 0;
+        }
+      }
+    }
+  }
+}
 
-  //wifi周期取得
-  /*
-  unsigned long curr = millis();    // 現在時刻を取得
-  if ((curr - prev) >= interval) {  // 前回実行時刻から実行周期以上経過していたら
-    // do periodic tasks            // 周期処理を実行
-    prev = curr;                    // 前回実行時刻を現在時刻で更新
-  }*/
+void ntpacces(){
+  getLocalTime(&timeInfo);  //tmオブジェクトのtimeInfoに現在時刻を入れ込む
+  Serial.println("ntpAcces!");
+  ntptime = millis();
+  Serial.print(timeInfo.tm_hour);
+  Serial.print(timeInfo.tm_min);
+  Serial.print(timeInfo.tm_sec);
 }
