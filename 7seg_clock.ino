@@ -13,7 +13,7 @@ const int digitSegments[10][18] = {
   { 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },  // 6
   { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 },  // 7
   { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },  // 8
-  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1 }   // 9
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1 }   // 9
 };
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);  //800kHzでNeoPixelを駆動
@@ -77,20 +77,20 @@ void ShowTime(int hour, int minute) {
   for (int i = 0; i < 4; i++) {     //各ケタ
     for (int j = 0; j < 18; j++) {  //1ケタ分のLED（18個）の表示
       int index = i * 18 + j;
-      // if (i == 2) {
-      //   pixels.setPixelColor(index + 2, pixels.Color(100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j]));
-      // } else if (i == 3) {
-      //   pixels.setPixelColor(index + 2, pixels.Color(100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j]));
-      // } else {
-      //   pixels.setPixelColor(index, pixels.Color(100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j]));
-      // }
 
+      int huestart = 0;//始まりの色（書き換える）
+      int huefin = 65535;//終わりの色（書き換える）
+      int hue = (huefin - huestart) * index + huestart;//色の範囲を指定している(ここは書き換えない（0~65535))
+      int sat = 255;
+      int val = 200;
+      
+   
       if (i == 2) {
-        pixels.setPixelColor(index + 2, pixels.ColorHSV(index * (65535/74), 255, 200 * digitSegments[s[i]][j]));//hue(色),色彩、明るさ
+        pixels.setPixelColor(index + 2, pixels.ColorHSV(hue, sat, val * digitSegments[s[i]][j]));//hue(色),色彩、明るさ
       } else if (i == 3) {
-        pixels.setPixelColor(index + 2, pixels.ColorHSV(index * (65535/74), 255, 200 * digitSegments[s[i]][j]));
+        pixels.setPixelColor(index + 2, pixels.ColorHSV(hue, sat, val * digitSegments[s[i]][j]));
       } else {
-        pixels.setPixelColor(index, pixels.ColorHSV(index * (65535/74), 255, 200 * digitSegments[s[i]][j]));
+        pixels.setPixelColor(index, pixels.ColorHSV(hue, sat, val * digitSegments[s[i]][j]));
       }
     }
   }
