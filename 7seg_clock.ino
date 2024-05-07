@@ -76,12 +76,21 @@ void ShowTime(int hour, int minute) {
   //  int digitSegments1 = digitSegments[s[i]][x] - 1;
   for (int i = 0; i < 4; i++) {     //各ケタ
     for (int j = 0; j < 18; j++) {  //1ケタ分のLED（18個）の表示
+      int index = i * 18 + j;
+      // if (i == 2) {
+      //   pixels.setPixelColor(index + 2, pixels.Color(100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j]));
+      // } else if (i == 3) {
+      //   pixels.setPixelColor(index + 2, pixels.Color(100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j]));
+      // } else {
+      //   pixels.setPixelColor(index, pixels.Color(100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j]));
+      // }
+
       if (i == 2) {
-        pixels.setPixelColor(i * 18 + j + 2, pixels.Color(100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j]));
+        pixels.setPixelColor(index + 2, pixels.ColorHSV(index * (65535/74), 255, 200 * digitSegments[s[i]][j]));//hue(色),色彩、明るさ
       } else if (i == 3) {
-        pixels.setPixelColor(i * 18 + j + 2, pixels.Color(100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j]));
+        pixels.setPixelColor(index + 2, pixels.ColorHSV(index * (65535/74), 255, 200 * digitSegments[s[i]][j]));
       } else {
-        pixels.setPixelColor(i * 18 + j, pixels.Color(100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j], 100 * digitSegments[s[i]][j]));
+        pixels.setPixelColor(index, pixels.ColorHSV(index * (65535/74), 255, 200 * digitSegments[s[i]][j]));
       }
     }
   }
