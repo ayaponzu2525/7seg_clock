@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include <Adafruit_NeoPixel.h>
+#include "wifi_setting.h"
 #define PIN 27        //INが接続されているピンを指定
 #define NUMPIXELS 74  //LEDの数を指定
 const int digitSegments[10][18] = {
@@ -16,9 +17,6 @@ const int digitSegments[10][18] = {
 };
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);  //800kHzでNeoPixelを駆動
-
-const char *ssid = "your ssid";
-const char *password = "your pass";
 
 int flag;//:を点滅させるフラグ
 unsigned long previousTime;
