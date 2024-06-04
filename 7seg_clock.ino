@@ -79,8 +79,8 @@ void ShowTime(int hour, int minute) {
       int index = i * 18 + j;
 
       int huestart = 0;//始まりの色（書き換える）
-      int huefin = 65535;//終わりの色（書き換える）
-      int hue = (huefin - huestart) * index + huestart;//色の範囲を指定している(ここは書き換えない（0~65535))
+      int huefin = 65535;//終わりの色（書き換える)
+      int hue = ((huefin - huestart) / 74) * index + huestart;//色の範囲を指定している(ここは書き換えない（0~65535))
       int sat = 255;
       int val = 200;
       
