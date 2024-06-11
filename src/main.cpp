@@ -91,9 +91,9 @@ void ShowTime(int hour, int minute) {
     for (int j = 0; j < 18; j++) {  //1ケタ分のLED（18個）の表示
       int index = i * 18 + j;
 
-      int huestart = 0;//始まりの色（書き換える）
-      int huefin = 65535;//終わりの色（書き換える)
-      int hue = ((huefin - huestart) / 74) * index + huestart;//色の範囲を指定している(ここは書き換えない（0~65535))
+      int huestart = 16363;//0;//始まりの色（書き換える）
+      int huefin = 32766;//65536;終わりの色（書き換える)
+      int hue = ((huefin - huestart) / 37) * index + huestart;//色の範囲を指定している(ここは書き換えない（0~65535))
       int sat = 255;
       int val = 200;
       
@@ -196,9 +196,9 @@ void ClockOperation(){
         int time[2];
         Serial.print(dataInt);
         
-        if (dataInt == 9999){
+        if (dataInt == 9999){//ntpみにいく
           int life = 1;
-        }else if(dataInt == 9998){
+        }else if(dataInt == 9998){//ntpみにいかない　カウントアップのみ
           int life = 2;
           int change =0;
         }else{
