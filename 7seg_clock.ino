@@ -107,13 +107,25 @@ void ShowTime(int hour, int minute) {
 
 
 void loop() {
-
-  Clock();//1秒カウントアップ
-  ShowTime(timeInfo.tm_hour, timeInfo.tm_min);
-  if(millis() - ntptime > 180*1000){//ntpをとった時間から180秒たったら
-    ntpacces();
+  if (life == 1){
+    if(chnge == 0){
+      ntpacces();
+      int chnge =1;
+    }
+    Clock();//1秒カウントアップ
+    ShowTime(timeInfo.tm_hour, timeInfo.tm_min);
+    if(millis() - ntptime > 180*1000){//ntpをとった時間から180秒たったら
+      ntpacces();
+    }
+    ClockOperation();
+  }else if(life == 2){
+    Clock();
+    ShowTime(timeInfo.tm_hour, timeInfo.tm_min);
+  }else if(life == 0){
+    Clock();
+    ClockOperation();
+    ShowTime(timeInfo.tm_hour, timeInfo.tm_min);
   }
-  
 }
 
 void Clock(){
@@ -142,4 +154,64 @@ void ntpacces(){
   Serial.print(timeInfo.tm_hour);
   Serial.print(timeInfo.tm_min);
   Serial.print(timeInfo.tm_sec);
+}
+void ClockOperation(){
+  if (millis() - waitingtime >= 1000) {   //プログラムが経過した時間が1秒経ったら
+    waitingtime = millis();   //基準時間に現在時間を代入
+    if (WiFi.status() == WL_CONNECTED) {
+      HTTPClient http;
+
+      // URLの設定
+      http.begin(serverUrl);
+
+      // GETリクエストの送信
+      int httpResponseCode = http.GET();
+
+      if (httpResponseCode > 0) {
+      //   // HTTPレスポンスコードを表示
+        Serial.print("HTTP Response code: ");
+        Serial.println(httpResponseCode);
+
+      //   // ペイロードの取得と表示
+        String payload = http.getString();
+        Serial.println("Received payload:");
+        Serial.println(payload);
+
+        int dataInt = payload.toInt();
+        int time[2];
+        Serial.print(dataInt);
+        
+        if (dataInt == 9999){
+          int life = 1;
+        }else if(dataInt == 9998){
+          int life = 2;
+          int chnge =0;
+        }else{
+          for (int i = 1; i >= 0; i--){
+          time[i] = dataInt % 100;
+          dataInt = (dataInt - time[i]) / 100;
+          }
+          int life =0;
+          timeInfo.tm_hour = time[0];
+          timeInfo.tm_min = time[1];
+
+          Serial.print(timeInfo.tm_hour);
+          Serial.print(timeInfo.tm_min);
+        }
+        Serial.println("Data content copied to another variable:");
+        //Serial.print(dataInt);
+
+      } else {
+        Serial.print("Error code: ");
+        Serial.println(httpResponseCode);
+      }
+
+      // リクエストを終了
+      http.end();
+    } else {
+      Serial.println("WiFi Disconnected");
+    }
+    // 過剰なリクエストを避けるために遅延を追加  // 必要に応じて遅延を調節
+  }
+  delay(100);
 }
