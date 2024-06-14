@@ -199,9 +199,9 @@ void ClockOperation(){
         int dataInt = payload.toInt();
         int time[2];
         
-        if (dataInt == 9998){//ntpみにいく
+        if (dataInt == 9999){//ntpみにいく
           life = 1;
-        }else if(dataInt == 9999){//ntpみにいかない　カウントアップのみ
+        }else if(dataInt == 9998){//ntpみにいかない　カウントアップのみ
           life = 2;
           change =0;
         }else{
