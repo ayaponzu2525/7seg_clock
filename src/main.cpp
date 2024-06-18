@@ -8,7 +8,7 @@
 //プロトタイプ宣言
 void ShowTime(int hour, int minute);
 void Clock();
-void ntpacces();
+void ntpaccess();
 void ClockOperation();
 
 const int digitSegments[10][18] = {
@@ -63,7 +63,7 @@ void setup() {
   int flag = 1;
   int life = 1;
   int change = 1;
-  ntpacces();
+  ntpaccess();
 }
 
 
@@ -122,13 +122,13 @@ void ShowTime(int hour, int minute) {
 void loop() {
   if (life == 1){
     if(change == 0){
-      ntpacces();
+      ntpaccess();
       int change =1;
     }
     Clock();//1秒カウントアップ
     ShowTime(timeInfo.tm_hour, timeInfo.tm_min);
     if(millis() - ntptime > 180*1000){//ntpをとった時間から180秒たったら
-      ntpacces();
+      ntpaccess();
     }
     ClockOperation();
   }else if(life == 2){
@@ -161,9 +161,9 @@ void Clock(){
   }
 }
 
-void ntpacces(){
+void ntpaccess(){
   getLocalTime(&timeInfo);  //tmオブジェクトのtimeInfoに現在時刻を入れ込む
-  Serial.println("ntpAcces!");
+  Serial.println("ntpaccess!");
   ntptime = millis();
   Serial.print(timeInfo.tm_hour);
   Serial.print(timeInfo.tm_min);
