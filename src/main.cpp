@@ -120,7 +120,7 @@ void ShowTime(int hour, int minute) {
 
 
 void loop() {
-  if (life == 1){
+  if(life == 1){
     if(change == 0){
       ntpaccess();
       int change =1;
@@ -132,6 +132,7 @@ void loop() {
     }
     ClockOperation();
   }else if(life == 2){
+    Serial.print("OK");
     Clock();
     ShowTime(timeInfo.tm_hour, timeInfo.tm_min);
   }else if(life == 0){
@@ -184,36 +185,35 @@ void ClockOperation(){
 
       if (httpResponseCode > 0) {
       //   // HTTPレスポンスコードを表示
-        Serial.print("HTTP Response code: ");
-        Serial.println(httpResponseCode);
+        //Serial.print("HTTP Response code: ");
+        //Serial.println(httpResponseCode);
 
       //   // ペイロードの取得と表示
         String payload = http.getString();
-        Serial.println("Received payload:");
-        Serial.println(payload);
+        //Serial.println("Received payload:");
+        //Serial.println(payload);
 
         int dataInt = payload.toInt();
         int time[2];
-        Serial.print(dataInt);
         
         if (dataInt == 9999){//ntpみにいく
-          int life = 1;
+          life = 1;
         }else if(dataInt == 9998){//ntpみにいかない　カウントアップのみ
-          int life = 2;
-          int change =0;
+          life = 2;
+          change =0;
         }else{
           for (int i = 1; i >= 0; i--){
-          time[i] = dataInt % 100;
-          dataInt = (dataInt - time[i]) / 100;
+            time[i] = dataInt % 100;
+            dataInt = (dataInt - time[i]) / 100;
           }
-          int life =0;
+          life = 0;
           timeInfo.tm_hour = time[0];
           timeInfo.tm_min = time[1];
 
           Serial.print(timeInfo.tm_hour);
           Serial.print(timeInfo.tm_min);
         }
-        Serial.println("Data content copied to another variable:");
+        //Serial.println("Data content copied to another variable:");
         //Serial.print(dataInt);
 
       } else {
