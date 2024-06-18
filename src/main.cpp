@@ -120,10 +120,7 @@ void ShowTime(int hour, int minute) {
 
 
 void loop() {
-  Serial.print("N");
-  Serial.println(life);
   if(life == 1){
-    Serial.print("HIGH");
     if(change == 0){
       ntpacces();
       int change =1;
