@@ -1,9 +1,10 @@
 #include <WiFi.h>
 #include <Adafruit_NeoPixel.h>
 #include "wifi_setting.h"
+#include "120pixel.h"
 #include <HTTPClient.h>
 #define PIN 27        //INが接続されているピンを指定
-#define NUMPIXELS 74  //LEDの数を指定
+// #define NUMPIXELS 74  //LEDの数を指定
 
 //プロトタイプ宣言
 void ShowTime(int hour, int minute);
@@ -11,20 +12,8 @@ void Clock();
 void ntpaccess();
 void ClockOperation();
 
-const int digitSegments[10][18] = {
-  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },  // 0
-  { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 },  // 1
-  { 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1 },  // 2
-  { 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1 },  // 3
-  { 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1 },  // 4
-  { 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1 },  // 5
-  { 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },  // 6
-  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0 },  // 7
-  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },  // 8
-  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1 }   // 9
-};
-
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);  //800kHzでNeoPixelを駆動
+
 
 int flag;//:を点滅させるフラグ
 int life;
@@ -88,8 +77,8 @@ void ShowTime(int hour, int minute) {
 
   //  int digitSegments1 = digitSegments[s[i]][x] - 1;
   for (int i = 0; i < 4; i++) {     //各ケタ
-    for (int j = 0; j < 18; j++) {  //1ケタ分のLED（18個）の表示
-      int index = i * 18 + j;
+    for (int j = 0; j < digit; j++) {  //1ケタ分のLED（18個）の表示
+      int index = i * digit + j;
 
       int huestart = 16363;//0;//始まりの色（書き換える）
       int huefin = 32766;//65536;終わりの色（書き換える)
@@ -99,9 +88,9 @@ void ShowTime(int hour, int minute) {
       
    
       if (i == 2) {
-        pixels.setPixelColor(index + 2, pixels.ColorHSV(hue, sat, val * digitSegments[s[i]][j]));//hue(色),色彩、明るさ
+        pixels.setPixelColor(index + coron_number, pixels.ColorHSV(hue, sat, val * digitSegments[s[i]][j]));//hue(色),色彩、明るさ
       } else if (i == 3) {
-        pixels.setPixelColor(index + 2, pixels.ColorHSV(hue, sat, val * digitSegments[s[i]][j]));
+        pixels.setPixelColor(index + coron_number, pixels.ColorHSV(hue, sat, val * digitSegments[s[i]][j]));
       } else {
         pixels.setPixelColor(index, pixels.ColorHSV(hue, sat, val * digitSegments[s[i]][j]));
       }
@@ -109,8 +98,12 @@ void ShowTime(int hour, int minute) {
   }
   
 
-  pixels.setPixelColor(36, pixels.Color(flag*100, flag*100, flag*100));//1の時[:]点灯
-  pixels.setPixelColor(37, pixels.Color(flag*100, flag*100, flag*100));
+  for (int i = 0; i < coron_number; i++){
+    pixels.setPixelColor(coron_digits[i], pixels.Color(flag*100, flag*100, flag*100));//1の時[:]点灯
+  }
+
+  // pixels.setPixelColor(36, pixels.Color(flag*100, flag*100, flag*100));//1の時[:]点灯
+  // pixels.setPixelColor(37, pixels.Color(flag*100, flag*100, flag*100));
 
 
   pixels.show();  //LEDに色を反映
